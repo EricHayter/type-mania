@@ -3,7 +3,7 @@ from curses import wrapper
 import time
 import random
 
-menu = [" TYPE-MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
+menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
 
 
 def print_menu(stdscr, selected_row_idx):
@@ -24,7 +24,6 @@ def print_menu(stdscr, selected_row_idx):
 
 
 def start_screen(stdscr):
-
     current_row_idx = 1
 
     print_menu(stdscr, current_row_idx)
@@ -41,10 +40,11 @@ def start_screen(stdscr):
             current_row_idx += 1
 
         elif key in [curses.KEY_ENTER, 10, 13]:
-            stdscr.clear()
-            stdscr.addstr(0, 0, f"You  pressed{menu[current_row_idx]}")
-            stdscr.refresh()
-            stdscr.getch()
+            if current_row_idx == 3:
+                exit()
+
+            elif current_row_idx == 1:
+                wpm_test(stdscr)
 
         print_menu(stdscr, current_row_idx)
         stdscr.refresh()
@@ -71,9 +71,21 @@ def load_text():
 
 
 def wpm_test(stdscr):
+    h, w = stdscr.getmaxyx()
+    x = w//2
+    y = h//2 - 1
+
     target_text = load_text()
     current_text = []
     wpm = 0
+
+    # countdown feature
+    for i in range(3, 0, -1):
+        stdscr.clear()
+        stdscr.addstr(y, x, str(i))
+        stdscr.refresh()
+        time.sleep(1)
+
     start_time = time.time()
     stdscr.nodelay(True)
 
