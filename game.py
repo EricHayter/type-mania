@@ -52,18 +52,21 @@ def start_screen(stdscr):
     # stdscr.getkey()
 
 
-def display_text(stdscr, target, current, wpm=0):
+def display_text(stdscr, target, current):
     stdscr.addstr(target)
+    
+    #for i, char in enumerate(current):
+    #    correct_char = target[i]
+    #    color = curses.color_pair(1)
+    #    if char != correct_char:
+    #        color = curses.color_pair(2)
+    #
+    #    stdscr.addstr(0, i, char, color)
+
+    stdscr.addstr(0,0, "".join(current))
+
+def display_wpm(stdscr, wpm=0):
     stdscr.addstr(1, 0, f"WPM: {wpm}")
-
-    for i, char in enumerate(current):
-        correct_char = target[i]
-        color = curses.color_pair(1)
-        if char != correct_char:
-            color = curses.color_pair(2)
-
-        stdscr.addstr(0, i, char, color)
-
 
 def load_text():
     with open("text.txt", "r") as f:
@@ -90,12 +93,16 @@ def wpm_test(stdscr):
     start_time = time.time()
     stdscr.nodelay(True)
 
+    display_text(stdscr, target_text, current_text)
+
+
     while True:
         #time_elapsed = max(time.time() - start_time, 1)
         wpm = 72 #round((len(current_text) / (time_elapsed / 60)) / 5)
 
         stdscr.clear()
-        display_text(stdscr, target_text, current_text, wpm)
+        display_text(stdscr, target_text, current_text)
+        display_wpm(stdscr, wpm)
         stdscr.refresh()
 
         if current_text == target_text:
@@ -104,6 +111,7 @@ def wpm_test(stdscr):
 
         try:
             key = stdscr.getkey()
+            display_text(stdscr, target_text, current_text)
         except:
             continue
 
