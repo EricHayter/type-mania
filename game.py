@@ -1,4 +1,5 @@
 import curses
+import cProfile
 from curses import wrapper
 import time
 import random
@@ -90,14 +91,14 @@ def wpm_test(stdscr):
     stdscr.nodelay(True)
 
     while True:
-        time_elapsed = max(time.time() - start_time, 1)
-        wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
+        #time_elapsed = max(time.time() - start_time, 1)
+        wpm = 72 #round((len(current_text) / (time_elapsed / 60)) / 5)
 
         stdscr.clear()
         display_text(stdscr, target_text, current_text, wpm)
         stdscr.refresh()
 
-        if "".join(current_text) == target_text:
+        if current_text == target_text:
             stdscr.nodelay(False)
             break
 
@@ -114,6 +115,7 @@ def wpm_test(stdscr):
                 current_text.pop()
         elif len(current_text) < len(target_text):
             current_text.append(key)
+
 
 
 def main(stdscr):
