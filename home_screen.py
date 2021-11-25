@@ -1,6 +1,6 @@
 import curses
 
-menu = ["Would you like to play again?", " YES ", " NO "]
+menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
 
 
 def print_menu(stdscr, selected_row_idx):
@@ -20,7 +20,7 @@ def print_menu(stdscr, selected_row_idx):
     stdscr.refresh()
 
 
-def end_screen(stdscr):
+def start_screen(stdscr):
     current_row_idx = 1
 
     print_menu(stdscr, current_row_idx)
@@ -33,15 +33,15 @@ def end_screen(stdscr):
         if key in [curses.KEY_UP, 450] and current_row_idx > 1:
             current_row_idx -= 1
 
-        elif key in [curses.KEY_DOWN, 456] and current_row_idx < 2:
+        elif key in [curses.KEY_DOWN, 456] and current_row_idx < 3:
             current_row_idx += 1
 
         elif key in [curses.KEY_ENTER, 10, 13]:
-            if current_row_idx == 1:
-                return 1
+            if current_row_idx == 3:
+                return 3
 
-            elif current_row_idx == 2:
-                return 2
+            elif current_row_idx == 1:
+                return 1
 
         print_menu(stdscr, current_row_idx)
         stdscr.refresh()
