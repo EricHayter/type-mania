@@ -1,23 +1,36 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import time
+import socket
+import threading
 
-hostName = "localhost"
-serverPort = 8080
+HEADER = 64
+PORT = 5050
+SERVER = socket.gethostbyname(socket.gethostname())
+ADDR = (SERVER, PORT)
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = "!DISCONNECT"
 
-class MyServer(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(ADDR)
 
-if __name__ == "__main__":
-    webServer = HTTPServer((hostName, serverPort), MyServer)
-    print("Server started http://%s:%s" % (hostName, serverPort))
 
-    try:
-        webServer.serve_forever()
-    except KeyboardInterrupt:
-        pass
+def handle_client(conn, addr):
 
-    webServer.server_close()
-    print("Server stopped.")
+    connected = True
+    while connected:
+        msg_length = conn.recv(HEADER).decode(FORMAT)
+        if msg_length:
+            msg_length = int(msg_length)
+            msg = conn.recv(msg_length).decode(FORMAT)
+            if msg == DISCONNECT_MESSAGE:
+                connected = False
+
+            conn.send("Msg received".encode(FORMAT))
+
+    conn.close()
+
+
+def start():
+    server.listen()
+    while True:
+        conn, addr = server.accept()
+        thread = threading.Thread(target=handle_client, args=(conn, addr))
+        thread.start()

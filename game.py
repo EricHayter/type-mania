@@ -2,10 +2,19 @@ import curses
 from curses import wrapper
 import time
 import random
+import threading
+
+# multiplayer stuff
+from server import start
+from client import send, setup
+
+# screens for game
 from home_screen import start_screen
 from game_menu import end_screen
 
+
 menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
+scores = []
 
 
 def display_text(stdscr, target, current, wpm=0):
@@ -87,6 +96,28 @@ def main(stdscr):
         option = start_screen(stdscr)
         if option == 1:
             wpm_test(stdscr)
+
+        if option == 2:
+            curses.endwin()
+
+            host = int(input())
+            if host == 1:
+                thread = threading.Thread(target=start)
+                thread.start()
+
+                time.sleep(3)
+
+                setup()
+                scores.append(send("10"))
+                scores.append(send("10"))
+
+                print(scores)
+
+                # ends server
+                send("!DISCONNECT")
+
+            elif host == 0:
+                scores.append(send("10"))
 
         elif option == 3:
             break

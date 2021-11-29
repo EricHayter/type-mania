@@ -37,11 +37,7 @@ def start_screen(stdscr):
             current_row_idx += 1
 
         elif key in [curses.KEY_ENTER, 10, 13]:
-            if current_row_idx == 3:
-                return 3
-
-            elif current_row_idx == 1:
-                return 1
+            return current_row_idx
 
         print_menu(stdscr, current_row_idx)
         stdscr.refresh()
