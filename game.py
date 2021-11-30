@@ -30,10 +30,15 @@ def display_text(stdscr, target, current, wpm=0):
         stdscr.addstr(0, i, char, color)
 
 
-def load_text():
+def load_text(line=False):
     with open("text.txt", "r") as f:
         lines = f.readlines()
-        return random.choice(lines).strip()
+        if line:
+            return (lines[line].strip(), line)
+
+        line = random.randint(0, len(lines))
+
+        return (lines[line].strip(), line)
 
 
 def wpm_test(stdscr):
@@ -41,7 +46,7 @@ def wpm_test(stdscr):
     x = w//2
     y = h//2 - 1
 
-    target_text = load_text()
+    target_text = load_text()[0]
     current_text = []
     wpm = 0
 
@@ -105,13 +110,11 @@ def main(stdscr):
                 thread = threading.Thread(target=start)
                 thread.start()
 
-                time.sleep(3)
-
                 setup()
-                scores.append(send("10"))
-                scores.append(send("10"))
+                print(send("0 10"))
+                print(send("32 85"))
 
-                print(scores)
+                time.sleep(3)
 
                 # ends server
                 send("!DISCONNECT")
