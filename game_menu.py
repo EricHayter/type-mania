@@ -1,6 +1,7 @@
 import curses
 
-menu = ["Would you like to play again?", " YES ", " NO "]
+end_menu = ["Would you like to play again?", " YES ", " NO "]
+multiplayer_menu = ["Create a lobby", "Join a lobby"]
 
 
 def print_menu(stdscr, selected_row_idx):
@@ -41,4 +42,26 @@ def end_screen(stdscr):
 
         print_menu(stdscr, current_row_idx)
         stdscr.refresh()
-    # stdscr.getkey()
+
+
+def multiplayer_screen(stdscr):
+    current_row_idx = 1
+
+    print_menu(stdscr, current_row_idx)
+
+    while 1:
+        key = stdscr.getch()
+
+        stdscr.clear()
+
+        if key in [curses.KEY_UP, 450] and current_row_idx > 1:
+            current_row_idx -= 1
+
+        elif key in [curses.KEY_DOWN, 456] and current_row_idx < 2:
+            current_row_idx += 1
+
+        elif key in [curses.KEY_ENTER, 10, 13]:
+            return current_row_idx
+
+        print_menu(stdscr, current_row_idx)
+        stdscr.refresh()

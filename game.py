@@ -3,6 +3,7 @@ from curses import wrapper
 import time
 import random
 import threading
+import json
 
 # multiplayer stuff
 from server import start
@@ -14,7 +15,18 @@ from game_menu import end_screen
 
 
 menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
-scores = []
+scores = {}
+
+
+def percentComplete(typed, actual):
+    shared = 0
+    try:
+        for idx, character in enumerate(actual):
+            if typed[idx] == character:
+                shared += 1
+        return int(shared/len(actual)*100)
+    except:
+        return 0
 
 
 def display_text(stdscr, target, current, wpm=0):
@@ -88,6 +100,8 @@ def wpm_test(stdscr):
                 current_text.pop()
         elif len(current_text) < len(target_text):
             current_text.append(key)
+            scores.update(json.loads(
+                send(f"0 {percentComplete(current_text, target_text)}")))
 
 
 def main(stdscr):
@@ -109,14 +123,12 @@ def main(stdscr):
             if host == 1:
                 thread = threading.Thread(target=start)
                 thread.start()
-
                 setup()
-                print(send("0 10"))
-                print(send("32 85"))
 
-                time.sleep(3)
+                wpm_test(stdscr)
 
                 # ends server
+                print(scores)
                 send("!DISCONNECT")
 
             elif host == 0:
