@@ -10,11 +10,14 @@ from server import start
 from client import send, setup
 
 # screens for game
+from game_menu import menu
 from home_screen import start_screen
 from game_menu import end_screen
 
 
-menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
+home_menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
+end_menu = ["Would you like to play again?", " YES ", " NO "]
+multiplayer_menu = [" Create game ", " Join game "]
 scores = {}
 
 
@@ -53,55 +56,104 @@ def load_text(line=False):
         return (lines[line].strip(), line)
 
 
-def wpm_test(stdscr):
-    h, w = stdscr.getmaxyx()
-    x = w//2
-    y = h//2 - 1
+def wpm_test(stdscr, mode):
+    if mode == "single":
+        h, w = stdscr.getmaxyx()
+        x = w//2
+        y = h//2 - 1
 
-    target_text = load_text()[0]
-    current_text = []
-    wpm = 0
+        target_text = load_text()[0]
+        current_text = []
+        wpm = 0
 
-    # countdown feature
-    for i in range(3, 0, -1):
-        stdscr.clear()
-        stdscr.addstr(y, x, str(i))
-        stdscr.refresh()
-        time.sleep(1)
+        # countdown feature
+        for i in range(3, 0, -1):
+            stdscr.clear()
+            stdscr.addstr(y, x, str(i))
+            stdscr.refresh()
+            time.sleep(1)
 
-    start_time = time.time()
-    stdscr.nodelay(True)
+        start_time = time.time()
+        stdscr.nodelay(True)
 
-    while True:
-        time_elapsed = max(time.time() - start_time, 1)
-        wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
+        while True:
+            time_elapsed = max(time.time() - start_time, 1)
+            wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
 
-        stdscr.clear()
-        display_text(stdscr, target_text, current_text, wpm)
-        stdscr.refresh()
+            stdscr.clear()
+            display_text(stdscr, target_text, current_text, wpm)
+            stdscr.refresh()
 
-        if "".join(current_text) == target_text:
-            option = end_screen(stdscr)
-            if option == 1:
-                wpm_test(stdscr)
-            elif option == 2:
+            if "".join(current_text) == target_text:
+                option = menu(stdscr, end_menu, True)
+                if option == 1:
+                    wpm_test(stdscr)
+                elif option == 2:
+                    break
+
+            try:
+                key = stdscr.getkey()
+            except:
+                continue
+
+            if ord(key) == 27:
                 break
 
-        try:
-            key = stdscr.getkey()
-        except:
-            continue
+            if key in ("KEY_BACKSPACE", '\b', "\x7f"):
+                if len(current_text) > 0:
+                    current_text.pop()
+            elif len(current_text) < len(target_text):
+                current_text.append(key)
 
-        if ord(key) == 27:
-            break
+    else:
+        h, w = stdscr.getmaxyx()
+        x = w//2
+        y = h//2 - 1
 
-        if key in ("KEY_BACKSPACE", '\b', "\x7f"):
-            if len(current_text) > 0:
-                current_text.pop()
-        elif len(current_text) < len(target_text):
-            current_text.append(key)
-            scores.update(json.loads(
-                send(f"0 {percentComplete(current_text, target_text)}")))
+        target_text = load_text()[0]
+        current_text = []
+        wpm = 0
+
+        # countdown feature
+        for i in range(3, 0, -1):
+            stdscr.clear()
+            stdscr.addstr(y, x, str(i))
+            stdscr.refresh()
+            time.sleep(1)
+
+        start_time = time.time()
+        stdscr.nodelay(True)
+
+        while True:
+            time_elapsed = max(time.time() - start_time, 1)
+            wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
+
+            stdscr.clear()
+            display_text(stdscr, target_text, current_text, wpm)
+            stdscr.refresh()
+
+            if "".join(current_text) == target_text:
+                option = menu(stdscr, end_menu, True)
+                if option == 1:
+                    wpm_test(stdscr)
+                elif option == 2:
+                    break
+
+            try:
+                key = stdscr.getkey()
+            except:
+                continue
+
+            if ord(key) == 27:
+                break
+
+            if key in ("KEY_BACKSPACE", '\b', "\x7f"):
+                if len(current_text) > 0:
+                    current_text.pop()
+            elif len(current_text) < len(target_text):
+                current_text.append(key)
+                scores.update(json.loads(
+                    send(f"0 {percentComplete(current_text, target_text)}")))
 
 
 def main(stdscr):
@@ -112,26 +164,26 @@ def main(stdscr):
     curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
     while True:
-        option = start_screen(stdscr)
+        option = menu(stdscr, home_menu, True)
         if option == 1:
-            wpm_test(stdscr)
+            wpm_test(stdscr, "single")
 
         if option == 2:
             curses.endwin()
 
-            host = int(input())
-            if host == 1:
+            host = menu(stdscr, multiplayer_menu, False)
+            if host == 0:
                 thread = threading.Thread(target=start)
                 thread.start()
                 setup()
 
-                wpm_test(stdscr)
+                wpm_test(stdscr, "multiplayer")
 
                 # ends server
                 print(scores)
                 send("!DISCONNECT")
 
-            elif host == 0:
+            elif host == 1:
                 scores.append(send("10"))
 
         elif option == 3:
