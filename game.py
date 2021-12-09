@@ -3,6 +3,7 @@ from curses import wrapper
 import time
 import random
 import threading
+import asyncio
 import json
 
 # multiplayer stuff
@@ -11,8 +12,6 @@ from client import send, setup
 
 # screens for game
 from game_menu import menu
-from home_screen import start_screen
-from game_menu import end_screen
 
 
 home_menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
@@ -32,7 +31,7 @@ def percentComplete(typed, actual):
         return 0
 
 
-def display_text(stdscr, target, current, wpm=0):
+async def display_text(stdscr, target, current, wpm=0):
     stdscr.addstr(target)
     stdscr.addstr(1, 0, f"WPM: {wpm}")
 
@@ -43,6 +42,8 @@ def display_text(stdscr, target, current, wpm=0):
             color = curses.color_pair(2)
 
         stdscr.addstr(0, i, char, color)
+
+    await asyncio.sleep(0.015)
 
 
 def load_text(line=False):
@@ -56,7 +57,7 @@ def load_text(line=False):
         return (lines[line].strip(), line)
 
 
-def wpm_test(stdscr, mode):
+async def wpm_test(stdscr, mode):
     if mode == "single":
         h, w = stdscr.getmaxyx()
         x = w//2
@@ -81,13 +82,13 @@ def wpm_test(stdscr, mode):
             wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
 
             stdscr.clear()
-            display_text(stdscr, target_text, current_text, wpm)
+            await display_text(stdscr, target_text, current_text, wpm)
             stdscr.refresh()
 
             if "".join(current_text) == target_text:
                 option = menu(stdscr, end_menu, True)
                 if option == 1:
-                    wpm_test(stdscr)
+                    wpm_test(stdscr, "single")
                 elif option == 2:
                     break
 
@@ -135,7 +136,7 @@ def wpm_test(stdscr, mode):
             if "".join(current_text) == target_text:
                 option = menu(stdscr, end_menu, True)
                 if option == 1:
-                    wpm_test(stdscr)
+                    wpm_test(stdscr, "single")
                 elif option == 2:
                     break
 
@@ -166,7 +167,7 @@ def main(stdscr):
     while True:
         option = menu(stdscr, home_menu, True)
         if option == 1:
-            wpm_test(stdscr, "single")
+            asyncio.run(wpm_test(stdscr, "single"))
 
         if option == 2:
             curses.endwin()
