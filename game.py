@@ -97,10 +97,10 @@ async def wpm_test(stdscr, mode):
             except:
                 continue
 
-            if ord(key) == 27:
+            if key == chr(27):
                 break
 
-            if key in ("KEY_BACKSPACE", '\b', "\x7f"):
+            if key in (127, "KEY_BACKSPACE", '\b', "\x7f"):
                 if len(current_text) > 0:
                     current_text.pop()
             elif len(current_text) < len(target_text):
@@ -135,10 +135,10 @@ async def wpm_test(stdscr, mode):
 
             if "".join(current_text) == target_text:
                 option = menu(stdscr, end_menu, True)
-                if option == 1:
-                    wpm_test(stdscr, "single")
-                elif option == 2:
-                    break
+                if option == 2:
+                    return False
+                else: 
+                    return True
 
             try:
                 key = stdscr.getkey()
@@ -148,7 +148,7 @@ async def wpm_test(stdscr, mode):
             if ord(key) == 27:
                 break
 
-            if key in ("KEY_BACKSPACE", '\b', "\x7f"):
+            if key in (curses.KEY_BACKSPACE, '\b', "\x7f"):
                 if len(current_text) > 0:
                     current_text.pop()
             elif len(current_text) < len(target_text):
@@ -167,7 +167,10 @@ def main(stdscr):
     while True:
         option = menu(stdscr, home_menu, True)
         if option == 1:
-            asyncio.run(wpm_test(stdscr, "single"))
+            while 1:
+                continue = asyncio.run(wpm_test(stdscr, "single"))
+                if continue == False:
+                    break
 
         if option == 2:
             curses.endwin()

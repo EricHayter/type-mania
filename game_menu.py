@@ -30,6 +30,8 @@ def menu(stdscr, menu, title):
 
     print_menu(stdscr, menu, current_row_idx)
 
+    stdscr.nodelay(False)
+
     while 1:
         key = stdscr.getch()
 
