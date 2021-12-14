@@ -31,7 +31,7 @@ def percentComplete(typed, actual):
         return 0
 
 
-async def display_text(stdscr, target, current, wpm=0):
+def display_text(stdscr, target, current, wpm=0):
     stdscr.addstr(target)
     stdscr.addstr(1, 0, f"WPM: {wpm}")
 
@@ -42,8 +42,6 @@ async def display_text(stdscr, target, current, wpm=0):
             color = curses.color_pair(2)
 
         stdscr.addstr(0, i, char, color)
-
-    await asyncio.sleep(0.015)
 
 
 def load_text(line=False):
@@ -57,7 +55,7 @@ def load_text(line=False):
         return (lines[line].strip(), line)
 
 
-async def wpm_test(stdscr, mode):
+def wpm_test(stdscr, mode):
     if mode == "single":
         h, w = stdscr.getmaxyx()
         x = w//2
@@ -82,13 +80,13 @@ async def wpm_test(stdscr, mode):
             wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
 
             stdscr.clear()
-            await display_text(stdscr, target_text, current_text, wpm)
+            display_text(stdscr, target_text, current_text, wpm)
             stdscr.refresh()
 
             if "".join(current_text) == target_text:
                 option = menu(stdscr, end_menu, True)
                 if option == 1:
-                    wpm_test(stdscr, "single")
+                    wpm_test(stdscr)
                 elif option == 2:
                     break
 
@@ -100,7 +98,7 @@ async def wpm_test(stdscr, mode):
             if key == chr(27):
                 break
 
-            if key in (127, "KEY_BACKSPACE", '\b', "\x7f"):
+            if key in ("KEY_BACKSPACE", '\b', "\x7f"):
                 if len(current_text) > 0:
                     current_text.pop()
             elif len(current_text) < len(target_text):
@@ -135,10 +133,10 @@ async def wpm_test(stdscr, mode):
 
             if "".join(current_text) == target_text:
                 option = menu(stdscr, end_menu, True)
-                if option == 2:
-                    return False
-                else: 
-                    return True
+                if option == 1:
+                    wpm_test(stdscr)
+                elif option == 2:
+                    break
 
             try:
                 key = stdscr.getkey()
@@ -148,7 +146,7 @@ async def wpm_test(stdscr, mode):
             if ord(key) == 27:
                 break
 
-            if key in (curses.KEY_BACKSPACE, '\b', "\x7f"):
+            if key in ("KEY_BACKSPACE", '\b', "\x7f"):
                 if len(current_text) > 0:
                     current_text.pop()
             elif len(current_text) < len(target_text):
@@ -167,10 +165,7 @@ def main(stdscr):
     while True:
         option = menu(stdscr, home_menu, True)
         if option == 1:
-            while 1:
-                continue = asyncio.run(wpm_test(stdscr, "single"))
-                if continue == False:
-                    break
+            wpm_test(stdscr, "single")
 
         if option == 2:
             curses.endwin()
