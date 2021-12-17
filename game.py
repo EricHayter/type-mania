@@ -7,7 +7,7 @@ import asyncio
 import json
 
 # multiplayer stuff
-from server import start
+from server import handle_client
 from client import send, setup
 
 # screens for game
@@ -177,17 +177,20 @@ def main(stdscr):
             host = menu(stdscr, multiplayer_menu, False)
             if host == 0:
                 curses.endwin()
-                print("This is a test")
-                start()
-                print("This is a test")
+                threading.Thread(target=handle_client).start()
                 setup()
+                print(send("2 32"))
+                print("This is a test")
+                print(send("4 32"))
+
+                time.sleep(10)
+
 
                 wpm_test(stdscr, "multiplayer")
 
                 # ends server
                 print(scores)
-                send("!DISCONNECT")
-
+                
             elif host == 1:
                 scores.append(send("10"))
 
