@@ -44,6 +44,7 @@ def menu(stdscr, menu, title):
             current_row_idx += 1
 
         elif key in [curses.KEY_ENTER, 10, 13]:
+            stdscr.nodelay(True)
             return current_row_idx
 
         print_menu(stdscr, menu, current_row_idx)

@@ -73,7 +73,6 @@ def wpm_test(stdscr, mode):
             time.sleep(1)
 
         start_time = time.time()
-        stdscr.nodelay(True)
 
         while True:
             time_elapsed = max(time.time() - start_time, 1)
@@ -82,6 +81,8 @@ def wpm_test(stdscr, mode):
             stdscr.clear()
             display_text(stdscr, target_text, current_text, wpm)
             stdscr.refresh()
+
+            time.sleep(0.016)
 
             if "".join(current_text) == target_text:
                 option = menu(stdscr, end_menu, True)
@@ -104,6 +105,7 @@ def wpm_test(stdscr, mode):
             elif len(current_text) < len(target_text):
                 current_text.append(key)
 
+
     else:
         h, w = stdscr.getmaxyx()
         x = w//2
@@ -121,7 +123,6 @@ def wpm_test(stdscr, mode):
             time.sleep(1)
 
         start_time = time.time()
-        stdscr.nodelay(True)
 
         while True:
             time_elapsed = max(time.time() - start_time, 1)
@@ -130,6 +131,8 @@ def wpm_test(stdscr, mode):
             stdscr.clear()
             display_text(stdscr, target_text, current_text, wpm)
             stdscr.refresh()
+
+            time.sleep(0.016)
 
             if "".join(current_text) == target_text:
                 option = menu(stdscr, end_menu, True)
@@ -168,12 +171,12 @@ def main(stdscr):
             wpm_test(stdscr, "single")
 
         if option == 2:
-            curses.endwin()
-
             host = menu(stdscr, multiplayer_menu, False)
             if host == 0:
-                thread = threading.Thread(target=start)
-                thread.start()
+                curses.endwin()
+                print("This is a test")
+                start()
+                print("This is a test")
                 setup()
 
                 wpm_test(stdscr, "multiplayer")
