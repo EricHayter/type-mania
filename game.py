@@ -55,7 +55,7 @@ def load_text(line=False):
         return (lines[line].strip(), line)
 
 
-def wpm_test(stdscr, mode):
+async def wpm_test(stdscr, mode):
     if mode == "single":
         h, w = stdscr.getmaxyx()
         x = w//2
@@ -87,23 +87,26 @@ def wpm_test(stdscr, mode):
             if "".join(current_text) == target_text:
                 option = menu(stdscr, end_menu, True)
                 if option == 1:
-                    wpm_test(stdscr)
+                    wpm_test(stdscr, "single")
                 elif option == 2:
                     break
 
             try:
-                key = stdscr.getkey()
+
+                key = stdscr.getkey() 
+                
+                if key == chr(27):
+                     break
+
+                if key in ("KEY_BACKSPACE", '\b', "\x7f"):
+                    if len(current_text) > 0:
+                        current_text.pop()
+                elif len(current_text) < len(target_text):
+                    current_text.append(key)
             except:
-                continue
+                pass
 
-            if key == chr(27):
-                break
-
-            if key in ("KEY_BACKSPACE", '\b', "\x7f"):
-                if len(current_text) > 0:
-                    current_text.pop()
-            elif len(current_text) < len(target_text):
-                current_text.append(key)
+            time.sleep(0.016)
 
 
     else:
@@ -168,7 +171,7 @@ def main(stdscr):
     while True:
         option = menu(stdscr, home_menu, True)
         if option == 1:
-            wpm_test(stdscr, "single")
+            asyncio.run(wpm_test(stdscr, "single"))
 
         if option == 2:
             host = menu(stdscr, multiplayer_menu, False)
