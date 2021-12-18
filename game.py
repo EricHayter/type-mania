@@ -178,12 +178,12 @@ def main(stdscr):
             if host == 0:
                 curses.endwin()
                 threading.Thread(target=handle_client).start()
+                time.sleep(0.5)
                 setup()
+                time.sleep(0.5)
                 print(send("2 32"))
-                print("This is a test")
                 print(send("4 32"))
 
-                time.sleep(10)
 
 
                 wpm_test(stdscr, "multiplayer")
