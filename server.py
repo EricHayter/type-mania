@@ -13,14 +13,11 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 
 playerCompletions = {}
 
-def handle_client():
-    print(SERVER)
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(ADDR)
+server.listen()
 
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(ADDR)
-    server.listen()
-    conn, addr = server.accept()
-
+def handle_client(conn, addr):
     while True:
         msg_length = conn.recv(HEADER).decode(FORMAT)
         if msg_length:
@@ -37,3 +34,14 @@ def handle_client():
             conn.send(json.dumps(playerCompletions).encode(FORMAT))
 
     conn.close()
+
+def start():
+    server.listen()
+    print(f"[LISTENING] Server is listening on {SERVER}")
+    while True:
+        conn, addr = server.accept()
+        thread = threading.Thread(target=handle_client, args=(conn, addr))
+        thread.start()
+        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+
+start()

@@ -181,12 +181,12 @@ def main(stdscr):
                 time.sleep(0.5)
                 setup()
                 time.sleep(0.5)
-                print(send("2 32"))
-                print(send("4 32"))
 
 
 
                 wpm_test(stdscr, "multiplayer")
+
+                time.sleep(10)
 
                 # ends server
                 print(scores)
