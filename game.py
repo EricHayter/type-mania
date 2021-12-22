@@ -55,7 +55,7 @@ def load_text(line=False):
         return (lines[line].strip(), line)
 
 
-async def wpm_test(stdscr, mode):
+def wpm_test(stdscr, mode):
     if mode == "single":
         h, w = stdscr.getmaxyx()
         x = w//2
@@ -157,8 +157,6 @@ async def wpm_test(stdscr, mode):
                     current_text.pop()
             elif len(current_text) < len(target_text):
                 current_text.append(key)
-                scores.update(json.loads(
-                    send(f"0 {percentComplete(current_text, target_text)}")))
 
 
 def main(stdscr):
@@ -171,7 +169,7 @@ def main(stdscr):
     while True:
         option = menu(stdscr, home_menu, True)
         if option == 1:
-            asyncio.run(wpm_test(stdscr, "single"))
+            wpm_test(stdscr, "single")
 
         if option == 2:
             host = menu(stdscr, multiplayer_menu, False)
