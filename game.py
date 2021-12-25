@@ -19,18 +19,6 @@ end_menu = ["Would you like to play again?", " YES ", " NO "]
 multiplayer_menu = [" Create game ", " Join game "]
 scores = {}
 
-
-def percentComplete(typed, actual):
-    shared = 0
-    try:
-        for idx, character in enumerate(actual):
-            if typed[idx] == character:
-                shared += 1
-        return int(shared/len(actual)*100)
-    except:
-        return 0
-
-
 def display_text(stdscr, target, current, wpm=0):
     stdscr.addstr(target)
     stdscr.addstr(1, 0, f"WPM: {wpm}")

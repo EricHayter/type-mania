@@ -13,10 +13,6 @@ DISCONNECT_MESSAGE = "!DISCONNECT"
 
 playerCompletions = {}
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(ADDR)
-server.listen()
-
 def handle_client(conn, addr):
     while True:
         msg_length = conn.recv(HEADER).decode(FORMAT)
@@ -36,6 +32,8 @@ def handle_client(conn, addr):
     conn.close()
 
 def start():
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(ADDR)
     server.listen()
     print(f"[LISTENING] Server is listening on {SERVER}")
     while True:

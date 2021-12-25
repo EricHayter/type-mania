@@ -1,16 +1,25 @@
 import socket
 import time
 import json
-from game import percentComplete 
 
 HEADER = 64
-PORT = 6050
+PORT = 5050
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 SERVER = "127.0.1.1"
 ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+def percentComplete(typed, actual):
+    shared = 0
+    try:
+        for idx, character in enumerate(actual):
+            if typed[idx] == character:
+                shared += 1
+        return int(shared/len(actual)*100)
+    except:
+        return 0
 
 def setup():
     try:
@@ -19,7 +28,7 @@ def setup():
     except:
         return None
 
-def send(msg):
+def send_message(msg):
     message = msg.encode(FORMAT)
     msg_length = len(message)
     send_length = str(msg_length).encode(FORMAT)
@@ -36,4 +45,4 @@ def client():
             break
 
         scores.update(json.loads(send(score_message)))
-        
+       
