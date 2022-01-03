@@ -1,16 +1,17 @@
 import curses
 import time
 
-scores = {"312": 20, "420": 50}
+player_scores = {"312": 20, "420": 50}
 
 curses.initscr()
 
-def progress_bar():
+def progress_bar(scores):
     win = curses.newwin(len(scores),50,0,0) 
     while 1:
         win.clear()
-        for h, (i,v) in enumerate(scores.items()):
-            score = f"player {i}: {v}"
+        for h, (id,score) in enumerate(scores.items()):
+            score = bar(score)
+            score = f"player {id}: {score}"
             win.addstr(h,0,score)
 
         win.refresh()
@@ -25,5 +26,4 @@ def bar(percent):
     string += "." * (20 - percent_complete)
     return string
 
-
-progress_bar()
+progress_bar(player_scores)

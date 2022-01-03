@@ -1,9 +1,5 @@
 import curses
 
-end_menu = ["Would you like to play again?", " YES ", " NO "]
-multiplayer_menu = ["Create a lobby", "Join a lobby"]
-
-
 def print_menu(stdscr, menu, selected_row_idx):
     stdscr.clear()
     h, w = stdscr.getmaxyx()
