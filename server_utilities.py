@@ -1,7 +1,7 @@
 import types
 import socket
 import selectors
-import asyncio
+import time
 import json
 
 player_scores = {}
@@ -21,6 +21,7 @@ def service_connection(key, mask):
     if mask & selectors.EVENT_READ:
         recv_data = sock.recv(1024)
         if recv_data:
+            print(repr(recv_data))
             player_scores.update(json.loads(recv_data))
             data.outb += bytes(json.dumps(player_scores),'utf-8')
 
@@ -33,7 +34,7 @@ def service_connection(key, mask):
             sent = sock.send(data.outb)
             data.outb = data.outb[sent:]
 
-async def client(player_scores, my_score, sock):
+def client(player_scores, my_score, sock):
     while True:
         # sending local player's score
         sock.send(bytes(json.dumps(my_score),'utf-8'))
@@ -43,7 +44,7 @@ async def client(player_scores, my_score, sock):
             player_scores.update(json.loads(server_response))
         except:
             pass
-        await asyncio.sleep(0.1)
+        time.sleep(0.1)
 
 def server():
     try: 

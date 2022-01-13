@@ -1,24 +1,27 @@
-import asyncio
+import threading
 import time
 
-num = 0
+# num = 42
 
-async def periodic(number):
-    while True:
-        number += 1
-        await asyncio.sleep(1)
 
-def stop():
-    task.cancel()
+# def addOne():
+#     num += 1
 
-loop = asyncio.get_event_loop()
-task = loop.create_task(periodic(num))
+# print("Testing: ")
+# addOne()
+# print(num)
 
-try:
-    loop.run_until_complete(task)
-except asyncio.CancelledError:
-    pass
+# test_obj = {"test": 123, "other_test": 321}
 
-while 1:
-    print("is this working?")
-    print(num)
+# def updatingObject(obj):
+#     obj.update({"NEW_TEST": 420})
+
+# print("Testing: ")
+# updatingObject(test_obj)
+# print(test_obj)
+
+
+'''
+CREATE THE FUNCTION USING THREADING
+use the global keyword for the scores though.
+'''

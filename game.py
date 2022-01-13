@@ -8,6 +8,8 @@ import socket
 import threading
 import time
 
+from scoring import getScore
+
 # importing server
 from server_utilities import server, client
 
@@ -57,12 +59,8 @@ def wpm_test(stdscr, multiplayer=False):
         lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         lsock.connect(('127.0.0.1',4321))
 
-        loop = asyncio.get_event_loop()
-        task = loop.create_task(client(scores,{"local":scores.get("local")},lsock))
-        try:
-            loop.run_until_complete(task)
-        except asyncio.CancelledError:
-            pass
+        run_client = threading.Thread(target=client, args=(scores,{"local":scores.get("local")},lsock))
+        run_client.start()
         
 
     # countdown feature
@@ -77,9 +75,9 @@ def wpm_test(stdscr, multiplayer=False):
     while True:
         time_elapsed = max(time.time() - start_time, 1)
         wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
-        percent_complete = (sum((Counter(target_text) & Counter(current_text)).values()))/len(target_text)*100
 
-        scores['local'] = percent_complete
+        scores['local'] = getScore(current_text,target_text)
+        print(scores.get("local"))
 
         stdscr.clear()
         display_text(stdscr, target_text, current_text, wpm)
@@ -95,9 +93,7 @@ def wpm_test(stdscr, multiplayer=False):
                 break
 
         try:
-
             key = stdscr.getkey() 
-            
             if key == chr(27):
                     break
 
@@ -112,7 +108,7 @@ def wpm_test(stdscr, multiplayer=False):
         time.sleep(0.016)
 
     if multiplayer:
-        task.cancel()
+        run_client.join()
 
 def main(stdscr):
     # initiallizing the color sets
@@ -129,6 +125,7 @@ def main(stdscr):
 
         elif game_mode == 2:
             hosting = menu(stdscr, multiplayer_menu, False)
+            print(f"hosting: {hosting}")
             if hosting == 0:
                 threading.Thread(target=server).start()
 
