@@ -19,7 +19,7 @@ multiplayer_menu = [" Create game ", " Join game "]
 
 
 class Scores:
-    scores = {"local": 0}
+    scores = {"you": 0}
 
     def getScores(self):
         return self.scores
@@ -85,7 +85,7 @@ def wpm_test(stdscr, multiplayer=False):
     while True:
         time_elapsed = max(time.time() - start_time, 1)
         wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
-        scores.setScores({"local": calculateScore(current_text, target_text)})
+        scores.setScores({"you": calculateScore(current_text, target_text)})
 
         stdscr.clear()
         display_text(stdscr, target_text, current_text, wpm)

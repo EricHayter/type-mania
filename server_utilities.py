@@ -23,7 +23,6 @@ def service_connection(key, mask):
     if mask & selectors.EVENT_READ:
         recv_data = sock.recv(1024)
         if recv_data:
-            print(repr(recv_data))
             player_scores.update(json.loads(recv_data))
             data.outb += bytes(json.dumps(player_scores), 'utf-8')
 
