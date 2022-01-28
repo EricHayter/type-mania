@@ -34,17 +34,25 @@ def service_connection(key, mask):
             sent = sock.send(data.outb)
             data.outb = data.outb[sent:]
 
-def client(player_scores, my_score, sock):
+def client(getScoresFunction, setScoresFunction, sock):
     while True:
         # sending local player's score
-        sock.send(bytes(json.dumps(my_score),'utf-8'))
-        server_response = sock.recv(1024)
+        sock.send(bytes(json.dumps(getScoresFunction()),'utf-8'))
+        server_response = json.loads(sock.recv(1024))
         # server responds with everyone's score in JSON format
         try:
-            player_scores.update(json.loads(server_response))
+            if closeClient(server_response):
+                return
+            setScoresFunction(server_response)
         except:
             pass
         time.sleep(0.1)
+
+def closeClient(scores):
+    for i in scores.keys():
+        if scores[i] != 100:
+            return False
+    return True
 
 def server():
     try: 

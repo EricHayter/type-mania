@@ -1,5 +1,6 @@
 import asyncio
 from collections import Counter
+from concurrent.futures import thread
 import curses
 from curses import wrapper
 import json
@@ -8,7 +9,7 @@ import socket
 import threading
 import time
 
-from scoring import getScore
+from scoring import calculateScore
 
 # importing server
 from server_utilities import server, client
@@ -20,7 +21,15 @@ from game_menu import menu
 home_menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
 end_menu = ["Would you like to play again?", " YES ", " NO "]
 multiplayer_menu = [" Create game ", " Join game "]
-scores = {"local": 0, "noob":0}
+
+class Scores:
+    scores = {"local": 0}
+    def getScores(self):
+        return self.scores
+    def setScores(self, newScores):
+        self.scores.update(newScores)
+
+scores = Scores()
 
 def display_text(stdscr, target, current, wpm=0):
     stdscr.addstr(target)
@@ -52,14 +61,13 @@ def wpm_test(stdscr, multiplayer=False):
 
     target_text = load_text()[0]
     current_text = []
-    percent_complete = 0
     wpm = 0
 
     if multiplayer:
         lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         lsock.connect(('127.0.0.1',4321))
 
-        run_client = threading.Thread(target=client, args=(scores,{"local":scores.get("local")},lsock))
+        run_client = threading.Thread(target=client, args=(scores.getScores, scores.setScores,lsock))
         run_client.start()
         
 
@@ -75,9 +83,7 @@ def wpm_test(stdscr, multiplayer=False):
     while True:
         time_elapsed = max(time.time() - start_time, 1)
         wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
-
-        scores['local'] = getScore(current_text,target_text)
-        print(scores.get("local"))
+        scores.setScores({"local":calculateScore(current_text,target_text)})
 
         stdscr.clear()
         display_text(stdscr, target_text, current_text, wpm)
@@ -106,9 +112,6 @@ def wpm_test(stdscr, multiplayer=False):
             pass
 
         time.sleep(0.016)
-
-    if multiplayer:
-        run_client.join()
 
 def main(stdscr):
     # initiallizing the color sets

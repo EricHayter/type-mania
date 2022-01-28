@@ -1,5 +1,5 @@
 # input_string should always be less shorter than the target string
-def getScore(input_string, target_string):
+def calculateScore(input_string, target_string):
     mutual = 0
     length = len(target_string)
     try:
