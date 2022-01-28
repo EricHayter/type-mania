@@ -7,6 +7,7 @@ import json
 player_scores = {}
 sel = selectors.DefaultSelector()
 
+
 def accept_wrapper(sock):
     conn, addr = sock.accept()
     print('accepted connection from ', addr)
@@ -14,6 +15,7 @@ def accept_wrapper(sock):
     data = types.SimpleNamespace(addr=addr, inb=b'', outb=b'')
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     sel.register(conn, events, data=data)
+
 
 def service_connection(key, mask):
     sock = key.fileobj
@@ -23,7 +25,7 @@ def service_connection(key, mask):
         if recv_data:
             print(repr(recv_data))
             player_scores.update(json.loads(recv_data))
-            data.outb += bytes(json.dumps(player_scores),'utf-8')
+            data.outb += bytes(json.dumps(player_scores), 'utf-8')
 
         else:
             print('closing connection to ', data.addr)
@@ -34,10 +36,11 @@ def service_connection(key, mask):
             sent = sock.send(data.outb)
             data.outb = data.outb[sent:]
 
+
 def client(getScoresFunction, setScoresFunction, sock):
     while True:
         # sending local player's score
-        sock.send(bytes(json.dumps(getScoresFunction()),'utf-8'))
+        sock.send(bytes(json.dumps(getScoresFunction()), 'utf-8'))
         server_response = json.loads(sock.recv(1024))
         # server responds with everyone's score in JSON format
         try:
@@ -48,14 +51,16 @@ def client(getScoresFunction, setScoresFunction, sock):
             pass
         time.sleep(0.1)
 
+
 def closeClient(scores):
     for i in scores.keys():
         if scores[i] != 100:
             return False
     return True
 
+
 def server():
-    try: 
+    try:
         HOST = '127.0.0.1'
         PORT = 4321
 
@@ -76,6 +81,7 @@ def server():
     except Exception as e:
         print(e)
         lsock.close()
+
 
 if __name__ == "__main__":
     server()

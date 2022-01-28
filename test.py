@@ -1,2 +1,2 @@
-obj = {"local":0, "testing":3}
+obj = {"local": 0, "testing": 3}
 print(obj.keys())

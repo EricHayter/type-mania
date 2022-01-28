@@ -1,9 +1,5 @@
-import asyncio
-from collections import Counter
-from concurrent.futures import thread
 import curses
 from curses import wrapper
-import json
 import random
 import socket
 import threading
@@ -17,19 +13,23 @@ from server_utilities import server, client
 # screens for game
 from game_menu import menu
 
-
 home_menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
 end_menu = ["Would you like to play again?", " YES ", " NO "]
 multiplayer_menu = [" Create game ", " Join game "]
 
+
 class Scores:
     scores = {"local": 0}
+
     def getScores(self):
         return self.scores
+
     def setScores(self, newScores):
         self.scores.update(newScores)
 
+
 scores = Scores()
+
 
 def display_text(stdscr, target, current, wpm=0):
     stdscr.addstr(target)
@@ -50,14 +50,15 @@ def load_text(line=False):
         if line:
             return (lines[line].strip(), line)
 
-        line = random.randint(0, len(lines)-1)
+        line = random.randint(0, len(lines) - 1)
 
         return (lines[line].strip(), line)
 
+
 def wpm_test(stdscr, multiplayer=False):
     h, w = stdscr.getmaxyx()
-    x = w//2
-    y = h//2 - 1
+    x = w // 2
+    y = h // 2 - 1
 
     target_text = load_text()[0]
     current_text = []
@@ -65,11 +66,12 @@ def wpm_test(stdscr, multiplayer=False):
 
     if multiplayer:
         lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        lsock.connect(('127.0.0.1',4321))
+        lsock.connect(('127.0.0.1', 4321))
 
-        run_client = threading.Thread(target=client, args=(scores.getScores, scores.setScores,lsock))
+        run_client = threading.Thread(target=client,
+                                      args=(scores.getScores, scores.setScores,
+                                            lsock))
         run_client.start()
-        
 
     # countdown feature
     for i in range(3, 0, -1):
@@ -83,7 +85,7 @@ def wpm_test(stdscr, multiplayer=False):
     while True:
         time_elapsed = max(time.time() - start_time, 1)
         wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
-        scores.setScores({"local":calculateScore(current_text,target_text)})
+        scores.setScores({"local": calculateScore(current_text, target_text)})
 
         stdscr.clear()
         display_text(stdscr, target_text, current_text, wpm)
@@ -99,9 +101,9 @@ def wpm_test(stdscr, multiplayer=False):
                 break
 
         try:
-            key = stdscr.getkey() 
+            key = stdscr.getkey()
             if key == chr(27):
-                    break
+                break
 
             if key in ("KEY_BACKSPACE", '\b', "\x7f"):
                 if len(current_text) > 0:
@@ -112,6 +114,7 @@ def wpm_test(stdscr, multiplayer=False):
             pass
 
         time.sleep(0.016)
+
 
 def main(stdscr):
     # initiallizing the color sets
@@ -134,7 +137,6 @@ def main(stdscr):
 
                 wpm_test(stdscr)
 
-                
             elif hosting == 1:
                 wpm_test(stdscr, True)
 

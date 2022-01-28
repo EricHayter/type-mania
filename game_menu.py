@@ -1,12 +1,13 @@
 import curses
 
+
 def print_menu(stdscr, menu, selected_row_idx):
     stdscr.clear()
     h, w = stdscr.getmaxyx()
 
     for idx, row in enumerate(menu):
-        x = w//2 - len(row)//2
-        y = h//2 - len(menu) + idx
+        x = w // 2 - len(row) // 2
+        y = h // 2 - len(menu) + idx
         if idx == selected_row_idx:
             stdscr.attron(curses.color_pair(4))
             stdscr.addstr(y, x, row)
