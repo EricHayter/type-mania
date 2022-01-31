@@ -11,7 +11,7 @@ from scoring import calculateScore
 from server_utilities import server, client
 
 # screens for game
-from menu import menu
+from menus.menu import menu
 
 home_menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
 end_menu = ["Would you like to play again?", " YES ", " NO "]
