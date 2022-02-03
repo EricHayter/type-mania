@@ -11,11 +11,7 @@ from scoring import calculateScore
 from server_utilities import server, client
 
 # screens for game
-from menus.menu import menu
-
-home_menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
-end_menu = ["Would you like to play again?", " YES ", " NO "]
-multiplayer_menu = [" Create game ", " Join game "]
+from game_menus import *
 
 
 class Scores:
@@ -94,7 +90,7 @@ def wpm_test(stdscr, multiplayer=False):
         time.sleep(0.016)
 
         if "".join(current_text) == target_text:
-            option = menu(stdscr, end_menu, True)
+            option = end_screen(stdscr)
             if option == 1:
                 wpm_test(stdscr)
             elif option == 2:
@@ -125,12 +121,12 @@ def main(stdscr):
     curses.init_pair(4, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
     while True:
-        game_mode = menu(stdscr, home_menu, True)
+        game_mode = home_screen(stdscr)
         if game_mode == 1:
             wpm_test(stdscr)
 
         elif game_mode == 2:
-            hosting = menu(stdscr, multiplayer_menu, False)
+            hosting = multiplayer_screen(stdscr)
             print(f"hosting: {hosting}")
             if hosting == 0:
                 threading.Thread(target=server).start()
