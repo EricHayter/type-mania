@@ -15,16 +15,15 @@ from game_menus import *
 
 
 class Scores:
-    scores = {"you": 0}
+
+    def __init__(self, name):
+        self.scores = {name: 0}
 
     def getScores(self):
         return self.scores
 
     def setScores(self, newScores):
         self.scores.update(newScores)
-
-
-scores = Scores()
 
 
 def display_text(stdscr, target, current, wpm=0):
@@ -62,7 +61,12 @@ def wpm_test(stdscr, multiplayer=False):
 
     if multiplayer:
         lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        lsock.connect(('127.0.0.1', 4321))
+
+        PORT = get_port_number(stdscr)
+        NAME = get_username(stdscr)
+        scores = Scores(NAME)
+
+        lsock.connect(('127.0.0.1', PORT))
 
         run_client = threading.Thread(target=client,
                                       args=(scores.getScores, scores.setScores,
@@ -81,7 +85,7 @@ def wpm_test(stdscr, multiplayer=False):
     while True:
         time_elapsed = max(time.time() - start_time, 1)
         wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
-        scores.setScores({"you": calculateScore(current_text, target_text)})
+        scores.setScores({NAME: calculateScore(current_text, target_text)})
 
         stdscr.clear()
         display_text(stdscr, target_text, current_text, wpm)
