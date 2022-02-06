@@ -14,16 +14,23 @@ from server_utilities import server, client
 from game_menus import *
 
 
-class Scores:
+class Player:
 
     def __init__(self, name):
         self.scores = {name: 0}
+        self.gameRunning = False
 
     def getScores(self):
         return self.scores
 
     def setScores(self, newScores):
         self.scores.update(newScores)
+
+    def startGame(self):
+        self.gameRunning = True
+
+    def isGameRunning(self):
+        return self.gameRunning
 
 
 def display_text(stdscr, target, current, wpm=0):
@@ -64,7 +71,7 @@ def wpm_test(stdscr, multiplayer=False):
 
         PORT = get_port_number(stdscr)
         NAME = get_username(stdscr)
-        scores = Scores(NAME)
+        scores = Player(NAME)
 
         lsock.connect(('127.0.0.1', PORT))
 
