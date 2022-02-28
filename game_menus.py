@@ -26,7 +26,7 @@ def get_port_number(stdscr):
                     return int(user_input)
 
             # LETTER INPUT
-            elif key in range(48, 57):
+            elif key in range(48, 58):
                 if len(user_input) < 4:
                     user_input += chr(key)
 
