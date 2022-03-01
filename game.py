@@ -9,6 +9,7 @@ from scoring import calculateScore
 
 # importing server
 from server_utilities import server, client
+from testing.client import Client
 
 # screens for game
 from game_menus import *
@@ -67,18 +68,18 @@ def wpm_test(stdscr, multiplayer=False):
     wpm = 0
 
     if multiplayer:
-        lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         PORT = get_port_number(stdscr)
         NAME = get_username(stdscr)
         scores = Player(NAME)
 
-        lsock.connect(('127.0.0.1', PORT))
+        client = Client(PORT, scores.getScores, scores.setScores)
+        client.connect()
 
-        run_client = threading.Thread(target=client,
-                                      args=(scores.getScores, scores.setScores,
-                                            lsock))
-        run_client.start()
+        s = client.setup()
+        print(s)
+
+        # run_client = threading.Thread(target=print(1))
+        # run_client.start()
 
     # countdown feature
     for i in range(3, 0, -1):
@@ -92,7 +93,7 @@ def wpm_test(stdscr, multiplayer=False):
     while True:
         time_elapsed = max(time.time() - start_time, 1)
         wpm = round((len(current_text) / (time_elapsed / 60)) / 5)
-        scores.setScores({NAME: calculateScore(current_text, target_text)})
+        # scores.setScores({NAME: calculateScore(current_text, target_text)})
 
         stdscr.clear()
         display_text(stdscr, target_text, current_text, wpm)
