@@ -28,18 +28,20 @@ class Client():
         send_length += b' ' * (Client.HEADER - len(send_length))
         self.sock.send(send_length)
         self.sock.send(message)
-        print(self.sock.recv(2048).decode(Client.FORMAT))
 
     def recieve(self):
-        msg = self.sock.recv(1024)
-        print(f"The message is {msg}")
-        return msg
+        msg_length = self.sock.recv(Client.HEADER).decode(Client.FORMAT)
+        print(int(msg_length))
+        if msg_length:
+            msg_length = int(msg_length)
+            msg = self.sock.recv(msg_length).decode(self.FORMAT)
+            return msg
 
     def setup(self):
+        # sending the actual message
         self.send(json.dumps(self.getScore()))
         msg_rcv = self.recieve()
-        self.setScore(json.dumps(msg_rcv))
-        return msg_rcv
+        self.setScore(json.loads(msg_rcv))
 
 
 if __name__ == "__main__":
