@@ -24,23 +24,25 @@ class Server():
     def handle_client(self, conn, addr):
         print(f"[NEW CONNECTION] {addr} connected.")
         msg_length = conn.recv(Server.HEADER).decode(Server.FORMAT)
+        print(int(msg_length))
         if msg_length:
             msg_length = int(msg_length)
             msg = conn.recv(msg_length).decode(self.FORMAT)
-            print(repr(msg))
-            try:
-                self.scores.update(json.loads(msg))
-                print("THIS IS WORKING")
-            except:
-                print(f"[{addr}] Disconnected")
-                return
+            print(msg)
+            # try:
+            self.scores.update(json.loads(msg))
+            # except:
+            #     print(f"[{addr}] Disconnected")
+            #     return
 
         while len(self.scores) < 1:
             time.sleep(0.5)
-            print(len(self.scores))
 
+        msg_length = len(json.dumps(self.scores))
+        send_length = str(msg_length).encode(Server.FORMAT)
+        send_length += b' ' * (Server.HEADER - len(send_length))
+        conn.send(send_length)
         conn.send(json.dumps(self.scores).encode(self.FORMAT))
-        print("this is being sent")
 
         while True:
             msg_length = conn.recv(Server.HEADER).decode(Server.FORMAT)
@@ -64,7 +66,7 @@ class Server():
             thread = threading.Thread(target=self.handle_client,
                                       args=(conn, addr))
             thread.start()
-            print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 6}")
+            print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")
 
 
 if __name__ == "__main__":
