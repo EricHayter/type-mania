@@ -37,6 +37,11 @@ def service_connection(key, mask):
 
 
 def client(getScoresFunction, setScoresFunction, sock):
+    # loading menu
+    while len(player_scores) < 4:
+        break
+
+    # once you get in game
     while True:
         # sending local player's score
         sock.send(bytes(json.dumps(getScoresFunction()), 'utf-8'))
