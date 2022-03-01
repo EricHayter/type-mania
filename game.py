@@ -75,8 +75,8 @@ def wpm_test(stdscr, multiplayer=False):
         client = Client(PORT, scores.getScores, scores.setScores)
         client.connect()
 
-        s = client.setup()
-        print(s)
+        client.setup()
+        print("THIS IS WORKING")
 
         # run_client = threading.Thread(target=print(1))
         # run_client.start()
