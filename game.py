@@ -8,8 +8,8 @@ import time
 from scoring import calculateScore
 
 # importing server
-from testing.client import Client
-from testing.server import Server
+from client import Client
+from server import Server
 
 # screens for game
 from game_menus import *
@@ -66,21 +66,6 @@ def wpm_test(stdscr, multiplayer=False):
     target_text = load_text()[0]
     current_text = []
     wpm = 0
-
-    if multiplayer:
-        # TODO change this so that the host doesn't need to enter PORT
-        PORT = get_port_number(stdscr)
-        NAME = get_username(stdscr)
-        scores = Player(NAME)
-
-        client = Client(PORT, scores.getScores, scores.setScores)
-        client.connect()
-
-        client.setup()
-        print("THIS IS WORKING")
-
-        # run_client = threading.Thread(target=print(1))
-        # run_client.start()
 
     # countdown feature
     for i in range(3, 0, -1):
@@ -140,11 +125,18 @@ def main(stdscr):
 
         elif game_mode == 2:
             hosting = multiplayer_screen(stdscr)
-            print(f"hosting: {hosting}")
-            if hosting == 0:
+
+            # if the user is hosting the game
+            if hosting:
+                # starting up server
                 s = Server()
                 s.bind()
                 threading.Thread(target=s.start).start()
+
+                # getting the host's name
+                NAME = get_username(stdscr)
+
+                # starting up the game when the host is ready
                 stdscr.nodelay(False)
                 startGame = stdscr.getch()
                 if startGame == ord("\n"):
@@ -152,7 +144,18 @@ def main(stdscr):
                     s.startGame()
                     wpm_test(stdscr, True)
 
-            elif hosting == 1:
+            # if they are joining the game
+            else:
+                PORT = get_port_number(stdscr)
+                NAME = get_username(stdscr)
+                scores = Player(NAME)
+
+                # starting up client
+                client = Client(PORT, scores.getScores, scores.setScores)
+                client.connect()
+                client.setup()
+
+                # starting up the game when the client is ready
                 wpm_test(stdscr, True)
 
         else:
