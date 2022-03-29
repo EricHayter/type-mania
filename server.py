@@ -9,6 +9,7 @@ class Server():
     HEADER = 8
     SERVER = '127.0.0.1'
     DISCONNECT_MESSAGE = "!DISCONNECT"
+    START_MESSAGE = "!START"
     FORMAT = 'utf-8'
 
     # instance variables
@@ -37,17 +38,13 @@ class Server():
             return
 
         while len(self.scores) < 4:
+            #
+            self.send(json.dumps(self.scores))
             if (self.gameRunning):
                 break
             time.sleep(0.5)
 
-        msg_length = len(json.dumps(self.scores).encode(Server.FORMAT))
-        send_length = str(msg_length).encode(Server.FORMAT)
-        send_length += b' ' * (Server.HEADER - len(send_length))
-        conn.send(send_length)
-        conn.send(json.dumps(self.scores).encode(self.FORMAT))
-
-        print("sent message")
+        self.send(conn, Server.START_MESSAGE)
 
         while True:
             msg_length = conn.recv(Server.HEADER).decode(Server.FORMAT)
@@ -75,6 +72,13 @@ class Server():
 
     def startGame(self):
         self.gameRunning = True
+
+    def send(self, conn, msg):
+        msg_length = len(msg.encode(Server.FORMAT))
+        send_length = str(msg_length).encode(Server.FORMAT)
+        send_length += b' ' * (Server.HEADER - len(send_length))
+        conn.send(send_length)
+        conn.send(msg.encode(self.FORMAT))
 
 
 if __name__ == "__main__":
