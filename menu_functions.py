@@ -46,3 +46,7 @@ def menu(stdscr, menu, title):
 
         print_menu(stdscr, menu, current_row_idx)
         stdscr.refresh()
+
+
+def info_screen(stdscr, text):
+    print_menu(stdscr, text)
