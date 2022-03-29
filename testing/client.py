@@ -3,7 +3,7 @@ import socket
 
 
 class Client():
-    HEADER = 64
+    HEADER = 8
     SERVER = '127.0.0.1'
     DISCONNECT_MESSAGE = "!DISCONNECT"
     FORMAT = 'utf-8'
@@ -22,16 +22,16 @@ class Client():
         self.send(Client.DISCONNECT_MESSAGE)
 
     def send(self, msg):
-        message = msg.encode(Client.FORMAT)
-        msg_length = len(message)
+        # send message to server
+        msg = bytes(msg, Client.FORMAT)
+        msg_length = len(msg)
         send_length = str(msg_length).encode(Client.FORMAT)
         send_length += b' ' * (Client.HEADER - len(send_length))
         self.sock.send(send_length)
-        self.sock.send(message)
+        self.sock.send(msg)
 
     def recieve(self):
         msg_length = self.sock.recv(Client.HEADER).decode(Client.FORMAT)
-        print(int(msg_length))
         if msg_length:
             msg_length = int(msg_length)
             msg = self.sock.recv(msg_length).decode(self.FORMAT)
@@ -45,12 +45,8 @@ class Client():
 
 
 if __name__ == "__main__":
-    c = Client(50, None, None)
+    c = Client(5050, None, None)
     c.connect()
 
-    c.send("Hello World!")
-    input()
-    c.send("Hello Everyone!")
-    input()
-    c.send("Hello Eric!")
+    c.setup()
     c.disconnect()
