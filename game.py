@@ -16,6 +16,7 @@ from game_menus import *
 
 
 class Player:
+    START_MESSAGE = "!START"
 
     def __init__(self, name):
         self.scores = {name: 0}
@@ -153,7 +154,22 @@ def main(stdscr):
                 # starting up client
                 client = Client(PORT, scores.getScores, scores.setScores)
                 client.connect()
-                client.setup()
+
+                # loading screen
+                setupThread = threading.Thread(target=client.setup())
+                setupThread.start()
+
+                # TODO fix perpetual loading screen
+                # pressume it is issue with not sending the start message
+                waiting = True
+                while waiting:
+                    stdscr.clear()
+                    info_screen(stdscr, scores.getScores.keys())
+                    stdscr.refresh()
+                    time.sleep(0.016)
+
+                    if not setupThread:
+                        waiting = False
 
                 # starting up the game when the client is ready
                 wpm_test(stdscr, True)
