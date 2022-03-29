@@ -1,5 +1,6 @@
 import json
 import socket
+import time
 
 
 class Client():
@@ -38,10 +39,18 @@ class Client():
             return msg
 
     def setup(self):
+        gameRunning = False
+
         # sending the actual message
         self.send(json.dumps(self.getScore()))
-        msg_rcv = self.recieve()
-        self.setScore(json.loads(msg_rcv))
+
+        # while the game is waiting to start
+        while not gameRunning:
+            msg_rcv = self.recieve()
+            if msg_rcv == Client.START_MESSAGE:
+                return
+            self.setScore(json.loads(msg_rcv))
+            time.sleep(0.1)
 
 
 if __name__ == "__main__":
