@@ -6,7 +6,7 @@ import time
 
 class Server():
     # class variablees
-    HEADER = 64
+    HEADER = 8
     SERVER = '127.0.0.1'
     DISCONNECT_MESSAGE = "!DISCONNECT"
     FORMAT = 'utf-8'
@@ -15,6 +15,7 @@ class Server():
     def __init__(self):
         self.PORT = 5050
         self.ADDR = (Server.SERVER, self.PORT)
+        self.gameRunning = False
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.scores = {}
 
@@ -23,26 +24,30 @@ class Server():
 
     def handle_client(self, conn, addr):
         print(f"[NEW CONNECTION] {addr} connected.")
-        msg_length = conn.recv(Server.HEADER).decode(Server.FORMAT)
-        print(int(msg_length))
-        if msg_length:
-            msg_length = int(msg_length)
-            msg = conn.recv(msg_length).decode(self.FORMAT)
-            print(msg)
-            # try:
-            self.scores.update(json.loads(msg))
-            # except:
-            #     print(f"[{addr}] Disconnected")
-            #     return
 
-        while len(self.scores) < 1:
+        msg_length = conn.recv(Server.HEADER).decode(Server.FORMAT)
+        msg = conn.recv(int(msg_length)).decode(Server.FORMAT)
+
+        print(len(msg_length))
+
+        try:
+            self.scores.update(json.loads(msg))
+        except:
+            print(f"[{addr}] Disconnected")
+            return
+
+        while len(self.scores) < 4:
+            if (self.gameRunning):
+                break
             time.sleep(0.5)
 
-        msg_length = len(json.dumps(self.scores))
+        msg_length = len(json.dumps(self.scores).encode(Server.FORMAT))
         send_length = str(msg_length).encode(Server.FORMAT)
         send_length += b' ' * (Server.HEADER - len(send_length))
         conn.send(send_length)
         conn.send(json.dumps(self.scores).encode(self.FORMAT))
+
+        print("sent message")
 
         while True:
             msg_length = conn.recv(Server.HEADER).decode(Server.FORMAT)
@@ -68,9 +73,16 @@ class Server():
             thread.start()
             print(f"[ACTIVE CONNECTIONS] {threading.active_count()}")
 
+    def startGame(self):
+        self.gameRunning = True
+
 
 if __name__ == "__main__":
     print("[STARTING] server is starting...")
     s = Server()
     s.bind()
     s.start()
+
+    threading.Thread(target=s.start).start()
+
+    s.startGame()
