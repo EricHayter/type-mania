@@ -89,4 +89,8 @@ def end_screen(stdscr):
 
 def multiplayer_screen(stdscr):
     multiplayer_menu = [" Create game ", " Join game "]
-    return menu(stdscr, multiplayer_menu, False)
+    hosting = menu(stdscr, multiplayer_menu, False)
+    if hosting == 0:
+        return True
+    else:
+        return False
