@@ -8,8 +8,8 @@ import time
 from scoring import calculateScore
 
 # importing server
-from server_utilities import server, client
 from testing.client import Client
+from testing.server import Server
 
 # screens for game
 from game_menus import *
@@ -68,6 +68,7 @@ def wpm_test(stdscr, multiplayer=False):
     wpm = 0
 
     if multiplayer:
+        # TODO change this so that the host doesn't need to enter PORT
         PORT = get_port_number(stdscr)
         NAME = get_username(stdscr)
         scores = Player(NAME)
@@ -141,9 +142,15 @@ def main(stdscr):
             hosting = multiplayer_screen(stdscr)
             print(f"hosting: {hosting}")
             if hosting == 0:
-                threading.Thread(target=server).start()
-
-                wpm_test(stdscr)
+                s = Server()
+                s.bind()
+                threading.Thread(target=s.start).start()
+                stdscr.nodelay(False)
+                startGame = stdscr.getch()
+                if startGame == ord("\n"):
+                    stdscr.nodelay(True)
+                    s.startGame()
+                    wpm_test(stdscr, True)
 
             elif hosting == 1:
                 wpm_test(stdscr, True)
