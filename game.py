@@ -156,7 +156,7 @@ def main(stdscr):
                 client.connect()
 
                 # loading screen
-                setupThread = threading.Thread(target=client.setup())
+                setupThread = threading.Thread(target=client.setup)
                 setupThread.start()
 
                 # TODO fix perpetual loading screen
@@ -164,11 +164,12 @@ def main(stdscr):
                 waiting = True
                 while waiting:
                     stdscr.clear()
-                    info_screen(stdscr, scores.getScores.keys())
+                    info_screen(stdscr, scores.getScores().insert(
+                        0, "PLAYERS").keys())
                     stdscr.refresh()
                     time.sleep(0.016)
 
-                    if not setupThread:
+                    if not setupThread.is_alive():
                         waiting = False
 
                 # starting up the game when the client is ready
