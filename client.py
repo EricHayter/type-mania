@@ -7,6 +7,7 @@ class Client():
     HEADER = 8
     SERVER = '127.0.0.1'
     DISCONNECT_MESSAGE = "!DISCONNECT"
+    START_MESSAGE = "!START"
     FORMAT = 'utf-8'
 
     def __init__(self, port, getScoreFunction, setScoreFunction):
