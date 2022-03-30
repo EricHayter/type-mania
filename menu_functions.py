@@ -49,4 +49,4 @@ def menu(stdscr, menu, title):
 
 
 def info_screen(stdscr, text):
-    print_menu(stdscr, text)
+    print_menu(stdscr, text, None)
