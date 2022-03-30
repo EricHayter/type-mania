@@ -137,6 +137,16 @@ def main(stdscr):
                 # getting the host's name
                 NAME = get_username(stdscr)
 
+                # creating a client for the host
+                client = Client(PORT, scores.getScores, scores.setScores)
+                client.connect()
+
+                # TODO loading screen for the host
+                setupThread = threading.Thread(target=client.setup)
+                setupThread.start()
+
+                # TODO try to merge together this if else statement (too much repeating code)
+
                 # starting up the game when the host is ready
                 stdscr.nodelay(False)
                 startGame = stdscr.getch()
@@ -159,13 +169,11 @@ def main(stdscr):
                 setupThread = threading.Thread(target=client.setup)
                 setupThread.start()
 
-                # TODO fix perpetual loading screen
-                # pressume it is issue with not sending the start message
+                # TODO add title to the top of the loading screen that says "PLAYERS"
                 waiting = True
                 while waiting:
                     stdscr.clear()
-                    info_screen(stdscr, scores.getScores().insert(
-                        0, "PLAYERS").keys())
+                    info_screen(stdscr, scores.getScores().keys())
                     stdscr.refresh()
                     time.sleep(0.016)
 
