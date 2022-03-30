@@ -38,8 +38,7 @@ class Server():
             return
 
         while len(self.scores) < 4:
-            #
-            self.send(json.dumps(self.scores))
+            self.send(conn, json.dumps(self.scores))
             if (self.gameRunning):
                 break
             time.sleep(0.5)
