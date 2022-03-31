@@ -125,7 +125,12 @@ def main(stdscr):
             wpm_test(stdscr)
 
         elif game_mode == 2:
+
             hosting = multiplayer_screen(stdscr)
+
+            PORT = get_port_number(stdscr)
+            NAME = get_username(stdscr)
+            scores = Player(NAME)
 
             # if the user is hosting the game
             if hosting:
@@ -133,9 +138,6 @@ def main(stdscr):
                 s = Server()
                 s.bind()
                 threading.Thread(target=s.start).start()
-
-                # getting the host's name
-                NAME = get_username(stdscr)
 
                 # creating a client for the host
                 client = Client(PORT, scores.getScores, scores.setScores)
@@ -145,21 +147,29 @@ def main(stdscr):
                 setupThread = threading.Thread(target=client.setup)
                 setupThread.start()
 
-                # TODO try to merge together this if else statement (too much repeating code)
+                # TODO add title to the top of the loading screen that says "PLAYERS"
+                waiting = True
+                while waiting:
+                    stdscr.clear()
+                    info_screen(
+                        stdscr, ["PLAYERS", *scores.getScores().keys()])
+                    stdscr.refresh()
 
-                # starting up the game when the host is ready
-                stdscr.nodelay(False)
-                startGame = stdscr.getch()
-                if startGame == ord("\n"):
-                    stdscr.nodelay(True)
-                    s.startGame()
-                    wpm_test(stdscr, True)
+                    # waiting for the host to start the game
+                    startGame = stdscr.getch()
+                    if startGame == ord("\n"):
+                        stdscr.nodelay(True)
+                        s.startGame()
+
+                    # setting the FPS
+                    time.sleep(0.016)
+
+                    if not setupThread.is_alive():
+                        waiting = False
+                # TODO try to merge together this if else statement (too much repeating code)
 
             # if they are joining the game
             else:
-                PORT = get_port_number(stdscr)
-                NAME = get_username(stdscr)
-                scores = Player(NAME)
 
                 # starting up client
                 client = Client(PORT, scores.getScores, scores.setScores)
@@ -173,15 +183,16 @@ def main(stdscr):
                 waiting = True
                 while waiting:
                     stdscr.clear()
-                    info_screen(stdscr, scores.getScores().keys())
+                    info_screen(
+                        stdscr, ["PLAYERS", *scores.getScores().keys()])
                     stdscr.refresh()
                     time.sleep(0.016)
 
                     if not setupThread.is_alive():
                         waiting = False
 
-                # starting up the game when the client is ready
-                wpm_test(stdscr, True)
+            # starting up the game when the client is ready
+            wpm_test(stdscr, True)
 
         else:
             break
