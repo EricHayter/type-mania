@@ -29,8 +29,6 @@ class Server():
         msg_length = conn.recv(Server.HEADER).decode(Server.FORMAT)
         msg = conn.recv(int(msg_length)).decode(Server.FORMAT)
 
-        print(len(msg_length))
-
         try:
             self.scores.update(json.loads(msg))
         except:
@@ -54,7 +52,6 @@ class Server():
                     print(f"[{addr}] Disconnected")
                     break
 
-                print(repr(msg))
                 conn.send("Msg received".encode(self.FORMAT))
 
         conn.close()
