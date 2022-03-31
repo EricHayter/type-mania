@@ -1,5 +1,4 @@
 import curses
-from sys import stderr
 from menu_functions import *
 
 
