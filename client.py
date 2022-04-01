@@ -53,6 +53,16 @@ class Client():
             self.setScore(json.loads(msg_rcv))
             time.sleep(0.1)
 
+    def sendScores(self):
+        while True:
+            self.send(json.dumps(self.getScore()))
+            msg_rcv = self.recieve()
+            if msg_rcv == Client.DISCONNECT_MESSAGE:
+                break
+            self.setScore(json.loads(msg_rcv))
+            time.sleep(0.1)
+        # send score to server
+
 
 if __name__ == "__main__":
     c = Client(5050, None, None)
