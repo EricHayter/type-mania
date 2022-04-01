@@ -1,0 +1,15 @@
+Things to do on Type-Mania
+Minor
+- make sure all players type the same piece of text
+
+Major
+- start sending game information between players
+- create the progess for each players
+- start working on the closing of a multiplayer lobby
+    - if the main player doesn't want to play anymore
+    - close their client
+    - close the server
+    - close other player's clients
+
+    - if a player doesn't want to play just close their client
+    - if they stil want to play just do the same lobby thing like before
