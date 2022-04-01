@@ -89,7 +89,8 @@ def wpm_test(stdscr, multiplayer=False):
         time.sleep(0.016)
 
         if "".join(current_text) == target_text:
-            option = end_screen(stdscr)
+            final_wpm = wpm
+            option = end_screen(stdscr, final_wpm)
             if option == 1:
                 wpm_test(stdscr)
             elif option == 2:
@@ -151,8 +152,8 @@ def main(stdscr):
                 waiting = True
                 while waiting:
                     stdscr.clear()
-                    info_screen(
-                        stdscr, ["PLAYERS", *scores.getScores().keys()])
+                    menu(
+                        stdscr, ["PLAYERS", *scores.getScores().keys(), "", "PRESS ENTER TO START"], 4)
                     stdscr.refresh()
 
                     # waiting for the host to start the game
@@ -184,7 +185,7 @@ def main(stdscr):
                 while waiting:
                     stdscr.clear()
                     info_screen(
-                        stdscr, ["PLAYERS", *scores.getScores().keys()])
+                        stdscr, ["PLAYERS", *scores.getScores().keys(), "", "WAITING FOR HOST"])
                     stdscr.refresh()
                     time.sleep(0.016)
 
