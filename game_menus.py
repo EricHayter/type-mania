@@ -78,17 +78,18 @@ def get_username(stdscr):
 
 def home_screen(stdscr):
     home_menu = [" TYPE MANIA ", " Singleplayer ", " Multiplayer ", " Exit "]
-    return menu(stdscr, home_menu, True)
+    return menu(stdscr, home_menu, 1)
 
 
-def end_screen(stdscr):
-    end_menu = ["Would you like to play again?", " YES ", " NO "]
-    return menu(stdscr, end_menu, True)
+def end_screen(stdscr, wpm):
+    end_menu = [
+        f"nyour WPM was {wpm}", "", "Would you like to play again?", " YES ", " NO "]
+    return menu(stdscr, end_menu, 3)
 
 
 def multiplayer_screen(stdscr):
     multiplayer_menu = [" Create game ", " Join game "]
-    hosting = menu(stdscr, multiplayer_menu, False)
+    hosting = menu(stdscr, multiplayer_menu, None)
     if hosting == 0:
         return True
     else:
