@@ -18,10 +18,11 @@ def print_menu(stdscr, menu, selected_row_idx):
     stdscr.refresh()
 
 
-def menu(stdscr, menu, title):
+# this needs fixing to work with the new menu system
+def menu(stdscr, menu, nonOptions):
     first = 0
-    if title:
-        first = 1
+    if nonOptions:
+        first = nonOptions
 
     current_row_idx = first
 
