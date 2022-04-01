@@ -144,11 +144,9 @@ def main(stdscr):
                 client = Client(PORT, scores.getScores, scores.setScores)
                 client.connect()
 
-                # TODO loading screen for the host
                 setupThread = threading.Thread(target=client.setup)
                 setupThread.start()
 
-                # TODO add title to the top of the loading screen that says "PLAYERS"
                 waiting = True
                 while waiting:
                     stdscr.clear()
@@ -180,7 +178,6 @@ def main(stdscr):
                 setupThread = threading.Thread(target=client.setup)
                 setupThread.start()
 
-                # TODO add title to the top of the loading screen that says "PLAYERS"
                 waiting = True
                 while waiting:
                     stdscr.clear()
